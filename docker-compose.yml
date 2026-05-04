@@ -1,0 +1,60 @@
+version: "3.9"
+
+networks:
+  devsecops:
+    driver: bridge
+
+volumes:
+  jenkins_home:
+  harbor_data:
+  trivy_cache:
+
+services:
+
+  # ─── Jenkins ───────────────────────────────────────────────
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   # UI Jenkins
+      - "50000:50000" # agents JNLP
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # DinD socket
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    networks:
+      - devsecops
+
+  # ─── Harbor (registre privé) ────────────────────────────────
+  # Harbor s'installe via son propre installer — voir étape ci-dessous
+  # On expose via nginx proxy sur le port 8090
+
+  # ─── Gitea (Git local, remplace GitHub) ─────────────────────
+  gitea:
+    image: gitea/gitea:1.21
+    container_name: gitea
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # UI Gitea
+      - "2222:22"     # SSH Git
+    volumes:
+      - ./gitea_data:/data
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    networks:
+      - devsecops
+
+  # ─── Trivy cache server (optionnel, accélère les scans) ─────
+  trivy-cache:
+    image: aquasec/trivy:latest
+    container_name: trivy-cache
+    command: server --listen 0.0.0.0:4954
+    ports:
+      - "4954:4954"
+    volumes:
+      - trivy_cache:/root/.cache/trivy
+    networks:
+      - devsecops
