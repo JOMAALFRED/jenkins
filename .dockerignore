@@ -1,0 +1,13 @@
+.git
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+reports
+trivy-report.txt
+gitea_data
+jenkins_home
+harbor
+secure-cicd
+scr
+scrpits

@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+reports/
+trivy-report.txt
+gitea_data/
+jenkins_home/
+harbor/common/
+harbor/data/
+harbor/log/
+*.key
+*.pub
+
+# Local/generated project leftovers
+scr/
+scrpits/
+secure-cicd/
+tests/
+
+# Large offline installer artifacts should stay local.
+*.tgz
+*.tar.gz

@@ -1,12 +1,12 @@
 git:latest
-workflow-aggregator:latest          # Pipeline Groovy
-docker-workflow:latest              # docker.build, docker.push
-credentials-binding:latest          # Injection sécurisée des secrets
-ssh-agent:latest                    # SSH pour déploiement distant
-blueocean:latest                    # UI moderne (optionnel)
-junit:latest                        # Rapports de tests
-htmlpublisher:latest                # Rapports HTML (Trivy, OWASP)
-warnings-ng:latest                  # Résultats SAST
-slack:latest                        # Notifications (optionnel)
+workflow-aggregator:latest
+docker-workflow:latest
+credentials-binding:latest
+ssh-agent:latest
+blueocean:latest
+junit:latest
+htmlpublisher:latest
+warnings-ng:latest
+slack:latest
 timestamper:latest
 ansicolor:latest
