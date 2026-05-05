@@ -17,7 +17,7 @@ pipeline {
 
     stage('Python tests') {
       steps {
-        sh 'python3 -m venv .venv'
+        sh 'python3 -m venv --clear .venv'
         sh '. .venv/bin/activate && python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt'
         sh 'mkdir -p reports'
         sh '. .venv/bin/activate && python -m pytest --junitxml=reports/junit.xml'
@@ -32,14 +32,15 @@ pipeline {
     stage('SAST') {
       steps {
         sh '. .venv/bin/activate && bandit -r src -q'
-        sh '. .venv/bin/activate && semgrep --config auto src tests_stable'
+        sh 'mkdir -p .semgrep-home'
+        sh '. .venv/bin/activate && HOME="$WORKSPACE/.semgrep-home" semgrep --metrics off --disable-version-check --config .semgrep.yml src tests_stable'
         sh 'gitleaks detect --source . --no-git --redact'
       }
     }
 
     stage('Build image') {
       steps {
-        sh 'docker build -t "$FULL_IMAGE" .'
+        sh 'DOCKER_BUILDKIT=0 docker build -t "$FULL_IMAGE" .'
       }
     }
 

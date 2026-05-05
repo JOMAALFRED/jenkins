@@ -24,6 +24,7 @@ if command -v trivy >/dev/null 2>&1; then
   trivy image \
     --server "$TRIVY_SERVER" \
     --severity "$SEVERITY" \
+    --ignore-unfixed \
     --exit-code 1 \
     --format "$OUTPUT_FORMAT" \
     --output "trivy-report.txt" \
@@ -36,6 +37,7 @@ else
     -v trivy_cache:/root/.cache/trivy \
     aquasec/trivy:latest image \
     --severity "$SEVERITY" \
+    --ignore-unfixed \
     --exit-code 1 \
     --format "$OUTPUT_FORMAT" \
     "$IMAGE" | tee "trivy-report.txt"

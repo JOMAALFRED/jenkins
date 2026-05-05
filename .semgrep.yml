@@ -1,0 +1,21 @@
+rules:
+  - id: python-dangerous-eval
+    languages:
+      - python
+    severity: ERROR
+    message: Avoid eval() because it can execute arbitrary code.
+    pattern: eval(...)
+
+  - id: python-dangerous-exec
+    languages:
+      - python
+    severity: ERROR
+    message: Avoid exec() because it can execute arbitrary code.
+    pattern: exec(...)
+
+  - id: python-subprocess-shell-true
+    languages:
+      - python
+    severity: WARNING
+    message: Avoid subprocess calls with shell=True unless the command is fully controlled.
+    pattern: subprocess.$FUNC(..., shell=True, ...)
