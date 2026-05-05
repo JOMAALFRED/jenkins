@@ -6,7 +6,6 @@ pipeline {
     IMAGE_TAG = "${env.BUILD_NUMBER ?: 'local'}"
     REGISTRY = 'localhost:8090'
     FULL_IMAGE = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    API_SECRET_TOKEN = credentials('api-secret-token')
   }
 
   stages {
