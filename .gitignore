@@ -1,4 +1,5 @@
 .venv/
+.env
 .semgrep-home/
 __pycache__/
 .pytest_cache/
