@@ -1,0 +1,10 @@
+services:
+  app-deployed:
+    image: ${IMAGE_TO_DEPLOY:?IMAGE_TO_DEPLOY is required}
+    container_name: devsecops-api-deployed
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    environment:
+      - API_SECRET_TOKEN=${API_SECRET_TOKEN:-demo-token-changeme}
+      - APP_VERSION=${APP_VERSION:-1.0.0}

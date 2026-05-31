@@ -36,6 +36,7 @@ services:
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
       - DOCKER_SOCKET=${DOCKER_SOCKET:-/var/run/docker.sock}
+      - COSIGN_PASSWORD=${COSIGN_PASSWORD:-}
     networks:
       - devsecops
 
