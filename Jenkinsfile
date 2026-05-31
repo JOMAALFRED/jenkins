@@ -34,7 +34,7 @@ pipeline {
         sh '. .venv/bin/activate && bandit -r src -q'
         sh 'mkdir -p .semgrep-home'
         sh '. .venv/bin/activate && HOME="$WORKSPACE/.semgrep-home" semgrep --metrics off --disable-version-check --config .semgrep.yml src tests_stable'
-        sh 'gitleaks detect --source . --no-git --redact'
+        sh 'gitleaks detect --source . --redact'
       }
     }
 
