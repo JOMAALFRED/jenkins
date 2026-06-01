@@ -74,13 +74,17 @@ pipeline {
           fi
 
           if [ ! -f cosign.key ] || [ ! -f cosign.pub ]; then
-            docker run --rm \
-              --user 0:0 \
-              --network host \
-              -e COSIGN_PASSWORD="$COSIGN_PASSWORD" \
-              -v "$PWD":/work \
-              -w /work \
-              gcr.io/projectsigstore/cosign:latest generate-key-pair
+            if command -v cosign >/dev/null 2>&1; then
+              cosign generate-key-pair
+            else
+              docker run --rm \
+                --user 0:0 \
+                --network host \
+                -e COSIGN_PASSWORD="$COSIGN_PASSWORD" \
+                -v "$PWD":/work \
+                -w /work \
+                gcr.io/projectsigstore/cosign:latest generate-key-pair
+            fi
           fi
         '''
       }

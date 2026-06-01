@@ -15,6 +15,11 @@ RUN curl -sLO https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/git
     && tar -xzf gitleaks_*.tar.gz -C /usr/local/bin gitleaks \
     && rm gitleaks_*.tar.gz
 
+# ── Cosign (signature et vérification d'images) ─────────────
+RUN curl -sL https://github.com/sigstore/cosign/releases/download/v2.5.3/cosign-linux-amd64 \
+    -o /usr/local/bin/cosign \
+    && chmod +x /usr/local/bin/cosign
+
 # ── Docker group pour accès socket ───────────────────────────
 RUN groupadd -f docker && usermod -aG docker jenkins
 
