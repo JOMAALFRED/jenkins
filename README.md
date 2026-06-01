@@ -76,6 +76,7 @@ Developpeur -> Depot Git
 ├── Jenkinsfile
 ├── Dockerfile
 ├── docker-compose.yml
+├── docker-compose.deploy.yml
 ├── README.md
 ├── docs/
 │   ├── cahier_des_charges.md
@@ -137,7 +138,106 @@ Le `Jenkinsfile` execute :
 4. SAST avec Bandit, Semgrep et Gitleaks ;
 5. build de l'image Docker ;
 6. scan Trivy ;
-7. push vers le registre configure.
+7. push vers le registre configure ;
+8. generation ou reutilisation des cles Cosign ;
+9. signature de l'image par digest ;
+10. verification de signature ;
+11. deploiement controle via Docker Compose ;
+12. verification de sante de l'application deployee.
+
+Le pipeline refuse l'image si Trivy detecte une vulnerabilite `HIGH` ou
+`CRITICAL`. La signature et la verification Cosign utilisent le digest retourne
+par `docker push`, afin de garantir que l'artefact signe correspond exactement a
+l'image publiee dans le registre.
+
+## Demonstration finale
+
+Avant la demonstration, demarrer la stack :
+
+```bash
+docker compose up -d --build
+```
+
+Avec Podman rootless :
+
+```bash
+cp .env.example .env
+sed -i "s|DOCKER_SOCKET=.*|DOCKER_SOCKET=/run/user/$(id -u)/podman/podman.sock|" .env
+docker compose up -d --build
+```
+
+Variables locales attendues dans `.env` :
+
+```env
+DOCKER_SOCKET=/run/user/1000/podman/podman.sock
+COSIGN_PASSWORD=change-me
+COSIGN_REGISTRY_ALIAS=host.containers.internal:8090
+```
+
+Lancer le job Jenkins `DevSecOps-pipeline`, puis verifier les stages :
+
+```text
+Checkout
+Python tests
+SAST
+Build image
+Trivy scan
+Push image
+Prepare signing keys
+Sign image
+Verify signature
+Deploy
+```
+
+Resultat attendu :
+
+```text
+Finished: SUCCESS
+```
+
+Application deployee par le pipeline :
+
+```bash
+curl http://localhost:8001/health
+```
+
+Si le port n'est pas accessible directement depuis l'hote, verifier dans le
+conteneur :
+
+```bash
+docker exec devsecops-api-deployed python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read().decode())"
+```
+
+## Preuves a inclure dans le rapport
+
+- Capture du job Jenkins termine en `SUCCESS`.
+- Capture des stages `Trivy scan`, `Sign image`, `Verify signature` et
+  `Deploy`.
+- Extrait du rapport JUnit montrant les tests Python.
+- Extrait Trivy avec `Aucune vulnerabilite CRITICAL,HIGH detectee`.
+- Extrait Cosign indiquant que la signature est valide.
+- Reponse du endpoint `/health` de l'application deployee.
+
+## Couverture du sujet
+
+Elements implementes :
+
+- CI/CD Jenkins declaratif.
+- Tests automatises.
+- SAST avec Bandit et Semgrep.
+- Detection de secrets avec Gitleaks.
+- Build Docker.
+- Scan d'image avec Trivy.
+- Blocage des images vulnerables.
+- Push vers registre local compatible Docker Registry.
+- Signature Cosign de l'image par digest.
+- Verification de signature avant deploiement.
+- Deploiement controle via Docker Compose.
+- Analyse de risques STRIDE.
+
+Harbor est prepare dans le depot et reste l'extension naturelle du registre
+local pour une mise en production : RBAC, policies, retention, scan integre et
+controle d'acces avance.
 
 ## Plan de travail
 
