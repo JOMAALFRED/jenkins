@@ -105,9 +105,10 @@ pipeline {
     stage('Deploy') {
       steps {
         sh '''
+          docker rm -f devsecops-api-deployed >/dev/null 2>&1 || true
           IMAGE_TO_DEPLOY="$FULL_IMAGE" docker-compose -f docker-compose.deploy.yml up -d
           docker inspect -f '{{.State.Running}}' devsecops-api-deployed | grep true
-          for attempt in 1 2 3 4 5; do
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
             if docker exec devsecops-api-deployed python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read().decode())"; then
               exit 0
             fi
