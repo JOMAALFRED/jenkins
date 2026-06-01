@@ -37,6 +37,7 @@ services:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
       - DOCKER_SOCKET=${DOCKER_SOCKET:-/var/run/docker.sock}
       - COSIGN_PASSWORD=${COSIGN_PASSWORD:-}
+      - COSIGN_REGISTRY_ALIAS=${COSIGN_REGISTRY_ALIAS:-host.containers.internal:8090}
     networks:
       - devsecops
 
